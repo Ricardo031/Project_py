@@ -20,7 +20,10 @@ while True:
     except ValueError:
         print("Please Enter a valid number for quantity")
 
+total_cost = price * quantity
+
 print(name)
 print(price)
 print(quantity)
+print(f"total cost: {total_cost}")
 print("Welcome")
