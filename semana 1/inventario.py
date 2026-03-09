@@ -4,26 +4,31 @@
 -Asegúrate de que el precio y la cantidad se conviertan correctamente a sus tipos numéricos usando float() e int().
 -Si el usuario ingresa un valor inválido, muestra un mensaje y vuelve a pedirlo.
 """
+#? Entrada de nombre(solicita datos del producto)
 name = input("Enter the name of product: " )
 
 while True:
     try:
+        #?Entrada de precio
         price = float(input("Enter the price of product: "))
         break
-    except ValueError:
+    except ValueError: #si hay un error pedira que repita
         print("Please inter a valid number of price")
 
 while True:
+    #? Entrada de cantidad
     try:
         quantity = int(input("ENter yout quantity: "))
         break
-    except ValueError:
+    except ValueError: #si hay un error pedira que repita
         print("Please Enter a valid number for quantity")
 
+# calculo de total
 total_cost = price * quantity
 
-print(name)
-print(price)
-print(quantity)
-print(f"total cost: {total_cost}")
-print("Welcome")
+#? mostrar resultado
+print(f"Product: {name} | price:{price} | quantity: {quantity} | total: {total_cost}")
+
+""" This program is used to store and to calculate the total price of a product that a user enters. 
+it has your validations for price and quantity, and messages to display the result
+"""
