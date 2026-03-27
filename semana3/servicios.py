@@ -1,4 +1,29 @@
 #utilizar la extension better comments para que puedan ver mejor los comentarios que coloque en el codigo
+import csv
+from datetime import datetime
+#* 4. Guardar CSV(persistencia de salida)
+def save_csv(inventory, filename="store.csv", header=True):
+    with open(filename, "a", newline="", encoding="utf-8" ) as f:
+        try:
+            if header:
+                f.write("Name,Price,Quantity\n")
+                for name, details in inventory.items():
+                    writer = csv.writer(f)
+                    writer.writerow([
+                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    ])
+                    writer.writerow([
+                        name.capitalize(),
+                        details['price'],
+                        details['quantity']
+                        ])
+        except Exception as e:
+            print(f"Error saving to CSV: {e}")
+        print(f"Inventory saved to {filename}")
+    print("-----------------------------------------------")
+
+
+
 #* 2. Estructura de datos y modularización
 #? agregar producto
 def add_product(inventory, name, price, quantity):
@@ -70,7 +95,7 @@ def search_product(inventory, name):
         
         if leave.lower() == "exit":
             return f"Search for '{current_name}' completed."
-          
+        
         
         # Actualizar el nombre para la siguiente iteración
         current_name = leave

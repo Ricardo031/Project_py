@@ -85,4 +85,5 @@ while option != 0:
         # Manejo de error para entradas no numéricas
         print("Invalid input. Please enter a valid integer.")
         continue
-
+    
+    servicios.save_csv(inventory)
