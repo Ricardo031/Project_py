@@ -1,30 +1,30 @@
 #utilizar la extension better comments para que puedan ver mejor los comentarios que coloque en el codigo
 import csv
 from datetime import datetime
-#* 4. Guardar CSV(persistencia de salida)
-def save_csv(inventory, filename="store.csv", header=True):
-    with open(filename, "a", newline="", encoding="utf-8" ) as f:
-        try:
-            if header:
-                f.write("Name,Price,Quantity\n")
-                for name, details in inventory.items():
-                    writer = csv.writer(f)
-                    writer.writerow([
-                        datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    ])
-                    writer.writerow([
-                        name.capitalize(),
-                        details['price'],
-                        details['quantity']
-                        ])
-        except Exception as e:
-            print(f"Error saving to CSV: {e}")
-        print(f"Inventory saved to {filename}")
-    print("-----------------------------------------------")
-
-
-
 #* 2. Estructura de datos y modularización
+#? fusionar inventario
+def merge_inventory(current_inventory, new_products):
+    """
+    Fusiona nuevos productos en el inventario actual.
+    #?Args:
+        current_inventory (dict): El inventario actual.
+        new_products (list): Lista de diccionarios de nuevos productos.
+    """
+    for product in new_products:
+        name = product['name']
+        price = product['price']
+        quantity = product['quantity']
+        
+        if name in current_inventory:
+            # Política: actualizar cantidad sumando y si el precio difiere, actualizar al nuevo
+            current_inventory[name]['quantity'] += quantity
+            current_inventory[name]['price'] = price
+        else:
+            # Agregar nuevo producto
+            current_inventory[name] = {
+                "price": price,
+                "quantity": quantity
+            }
 #? agregar producto
 def add_product(inventory, name, price, quantity):
     """
@@ -37,7 +37,7 @@ def add_product(inventory, name, price, quantity):
     """
     if name in inventory:
         # Informar que el producto ya existe
-        print(f"The product '{name}' already exists. Use update_product to modify it.")
+        print(f"\033[1;31mThe product '{name}' already exists. Use update_product to modify it.\033[0m")
     else:
         # Agregar nuevo producto al diccionario
         product = {
@@ -45,7 +45,7 @@ def add_product(inventory, name, price, quantity):
             "quantity": quantity,
         } 
         inventory[name] = product
-    print(f"Product '{name}' added successfully.")
+    print(f"\033[1;32mProduct '{name}' added successfully.\033[0m")
     print("-----------------------------------------------")
 
 
@@ -58,13 +58,13 @@ def show_invetory(inventory):
     """
     if not inventory:
         # Caso inventario vacío
-        print("The inventory is empty.")
+        print("\033[1;31mThe inventory is empty.\033[0m")
     else:
         # Recorrer y mostrar cada producto
-        print("Current Intentory:")
+        print("\033[1;34mCurrent Intentory:\033[0m")
         for name, details in inventory.items():
             total = details['price'] * details['quantity']
-            print(f"Name: '{name}' Price: {details['price']:.2f} | Quantity: {details['quantity']} | Total: {total:.2f}")
+            print(f"\033[1;32mName: '{name}' Price: {details['price']:.2f} | Quantity: {details['quantity']} | Total: {total:.2f}\033[0m")
         print("-----------------------------------------------")
 
 #? buscar producto
@@ -81,20 +81,20 @@ def search_product(inventory, name):
     while True:
         if current_name in inventory:
             # Producto encontrado: mostrar detalles y salir de la función
-            print(f"\nProduct '{current_name}' found.")
+            print(f"\n \033[1;34mProduct '{current_name}' found.\033[0m")
             print(f"Name: '{current_name}' | Price: {inventory[current_name]['price']:.2f} | Quantity: {inventory[current_name]['quantity']}")
-            return f"Success. if you want to continue searching, press '3'."
+            return f"\033[1;34mSuccess. if you want to continue searching, press '3'.\033[0m"
         # Producto no encontrado o nombre vacío
         if current_name == "":
             print("\nInvalid input. Please enter a valid product name.")
         else:
-            print(f"\nProduct '{current_name}' not found or does not exist.")
+            print(f"\n \033[1;31mProduct '{current_name}' not found or does not exist.\033[0m")
         
         # Preguntar si desea intentar con otro nombre o salir
         leave = input("Do you want to try searching for another product? (Enter new name or 'exit' to cancel): ").strip()
         
         if leave.lower() == "exit":
-            return f"Search for '{current_name}' completed."
+            return f"\033[1;34mSearch for '{current_name}' completed.\033[0m"
         
         
         # Actualizar el nombre para la siguiente iteración
@@ -116,13 +116,14 @@ def update_product(inventory, name, new_price=None, new_quantity=None):
         if new_price is not None:
             inventory[name]['price'] = new_price
             print(f"Price of '{name}' updated to {new_price:.2f}")
-        # Actualizar cantidad si se proporciona
+            # Actualizar cantidad si se proporciona
         if new_quantity is not None:
             inventory[name]['quantity'] = new_quantity
             print(f"Quantity of '{name}' updated to {new_quantity}")
+            print("-----------------------------------")
     else:
         # Producto no encontrado
-        print(f"Product '{name}' not found or does not exist.")
+        print("\033[1;31mProduct '{name}' not found or does not exist.\033[0m")
 
 #? eliminar producto
 def delete_product(inventory, name): 
@@ -136,11 +137,13 @@ def delete_product(inventory, name):
         # Eliminar entrada del diccionario
         del inventory[name]
         print(f"Product '{name}' deleted successfully.")
+        print("-----------------------------------")
     else:
         # Producto no encontrado
-        print(f"Product '{name}' not found or does not exist.")
+        print("\033[1;31mProduct '{name}' not found or does not exist.\033[0m")
 
 #? calcular estadísticas
+#* 3.Estadísticas del inventario
 def calculate_statistics(inventory): #return tupla/dict 
     """
     Calcula el valor total del inventario y la cantidad total de productos.
@@ -154,7 +157,7 @@ def calculate_statistics(inventory): #return tupla/dict
     product_most_exp_name = ""
     product_most_exp_price = 0
     product_most_exp_quantity = 0
-#* 3.Estadísticas del inventario
+#Refactor statistics calculation to return a dictionary for better usability
     if not inventory:
         # Caso inventario vacío
         return "The inventory is empty."
@@ -166,9 +169,12 @@ def calculate_statistics(inventory): #return tupla/dict
             product_most_exp_quantity = details['quantity']
         total_price += details['price'] * details['quantity']
         total_quantity += details['quantity']
+
+    print("\033[1;34mStatistics:\033[0m")
     print(f"total price: {total_price:.2f}")
     print(f"total quantity: {total_quantity}")
     print(f"product most expensive price is {product_most_exp_name}: {product_most_exp_price:.2f}")
     print(f"product most expensive quantity is {product_most_exp_name}: {product_most_exp_quantity}")
+    print("-----------------------------------")
 
 #todo: seguir con las demas funciones faltantes
