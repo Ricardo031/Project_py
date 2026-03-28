@@ -52,6 +52,9 @@ while option != 0:
             print(result)
         
         elif option == 4:
+            if not inventory:
+                print("\033[1;31mthere is not any product in the inventory.\033[0m")
+                continue
             name = input("Enter product name: ").strip()
             if name in inventory: 
                 print(f"Product '{name}' found.")
@@ -77,8 +80,17 @@ while option != 0:
             servicios.update_product(inventory, name, new_price, new_quantity)
         
         elif option == 5:
+            if not inventory:
+                print("\033[1;31mthere is not any product in the inventory.\033[0m")
+                continue
             name = input("Enter product name: ").strip()
-            if name in inventory:
+            if name == "":
+                print("\nInvalid input. Please enter a valid product name.")
+                continue
+            elif name not in inventory:
+                print(f"\033[1;31mProduct '{name}' not found or does not exist.\033[0m")
+                continue
+            elif name in inventory:
                 print(f"Product '{name}' found.")
                 servicios.delete_product(inventory, name)
 
@@ -102,7 +114,7 @@ while option != 0:
                     inventory.clear()
                     servicios.merge_inventory(inventory, loaded_products)
                     action_taken = "Replacement"
-                else:
+                elif overwrite == 'N':
                     servicios.merge_inventory(inventory, loaded_products)
                     action_taken = "Merge"
                 
